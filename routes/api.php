@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\PlanController;
 use Illuminate\Http\Request;
@@ -26,3 +27,8 @@ Route::get('/course/{course}', [CourseController::class, 'single'])->name('singl
 //plan
 Route::get('/plan/all', [PlanController::class, 'all'])->name('all.plans');
 Route::get('/plan/{plan}', [PlanController::class, 'single'])->name('single.plan');
+
+// auth
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/verify-phone-number', [AuthController::class, 'veryfyPhoneNumber'])->name('verify.phone.number');
