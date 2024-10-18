@@ -5,14 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Token extends Model
+class Payment extends Model
 {
     use HasFactory;
-
     protected $fillable = [
-        'user_id',
-        'code',
-        'used',
+        'order_id',
+        'res_number',
+        'status',
     ];
 
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }

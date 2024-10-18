@@ -20,6 +20,10 @@ class Course extends Model
         'body',
         'slug',
     ];
+    public function orders()
+    {
+        return $this->morphMany(Order::class, 'orderable');
+    }
 
     public function sessions()
     {

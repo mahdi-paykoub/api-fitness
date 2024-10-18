@@ -30,4 +30,16 @@ class CourseController extends Controller
         $data['sessions'] = $sessoins->get();
         return response()->json(['status' => true, 'data' => $data]);
     }
+
+    public function getCourseById(Request $request, $id)
+    {
+        try {
+            //get course by id
+            $course = Course::where('id', $id)->first();
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در دریافت  دوره بوجود آمد.']]);
+        }
+
+        return response()->json(['status' => true, 'data' => $course]);
+    }
 }

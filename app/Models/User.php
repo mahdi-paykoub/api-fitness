@@ -22,9 +22,22 @@ class User extends Authenticatable
         'name',
     ];
 
-    public function tokens()
+    public function customTokens()
     {
-        return $this->hasMany(Token::class);
+        return $this->hasMany(CustomToken::class);
     }
-   
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function userInfoStatus()
+    {
+        return $this->hasMany(UserInfoStatus::class);
+    }
 }

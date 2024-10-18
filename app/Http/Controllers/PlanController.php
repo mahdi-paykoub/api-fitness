@@ -22,4 +22,15 @@ class PlanController extends Controller
     {
         return response()->json(['status' => true, 'data' => $plan]);
     }
+    public function getPlanById(Request $request , $id)
+    {
+        try {
+            //get course by id
+            $plan = Plan::where('id', $id)->first();
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در دریافت  برنامه بوجود آمد.']]);
+        }
+
+        return response()->json(['status' => true, 'data' => $plan]);
+    }
 }

@@ -19,4 +19,9 @@ class Plan extends Model
         'description',
         'body',
     ];
+
+    public function orders()
+    {
+        return $this->morphMany(Order::class, 'orderable');
+    }
 }
