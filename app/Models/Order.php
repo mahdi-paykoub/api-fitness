@@ -16,6 +16,8 @@ class Order extends Model
         'status',
         'price',
         'tracking_serial',
+        'turn_code',
+        'visit',
     ];
 
     public function orderable(): MorphTo
@@ -31,5 +33,9 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function userInfoStatus()
+    {
+        return $this->hasOne(UserInfoStatus::class);
     }
 }

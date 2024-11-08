@@ -17,7 +17,7 @@ class PlanController extends Controller
     {
         try {
             //get all courses
-            $plans = ModelsPlan::all();
+            $plans = Plan::all();
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در دریافت برنامه ها بوجود آمد.']]);
         }
@@ -36,15 +36,19 @@ class PlanController extends Controller
             'price' => 'required',
             'description' => 'required',
             'body' => 'required',
+            'visit' => 'required',
+            'visit_price' => 'nullable',
+            'features' => 'nullable',
+            'duration' => 'required',
         ]);
-
+        // return response()->json($validation->valid()['features']);
         if ($validation->fails())
             return response()->json(['status' => false, 'message' => $validation->errors()->all()]);
 
         try {
-            //add db
             plan::create($validation->valid());
         } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => [$throwable->getMessage()]]);
             return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
         }
 
@@ -78,5 +82,26 @@ class PlanController extends Controller
             return response()->json(['status' => false, 'message' => ['مشکلی در حذف بوجود آمد.']]);
         }
         return response()->json(['status' => true, 'message' => ['دوره با موفقیت حذف شد.']]);
+    }
+
+    public function uploadCKEditorImages(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'files' => 'required',
+        
+        ]);
+        if ($validation->fails())
+            return response()->json(['status' => false, 'message' => $validation->errors()->all()]);
+
+
+        //upload image
+        $file = $validation->valid()['files'];
+        $destinationPath = 'assets/images/ckEditor/';
+        $file_name = rand(1, 9999) . '-' . $file->getClientOriginalName();
+        $file->move(public_path($destinationPath), $file_name);
+
+
+
+        return response()->json(['status' => true, 'url' => $destinationPath . $file_name]);
     }
 }

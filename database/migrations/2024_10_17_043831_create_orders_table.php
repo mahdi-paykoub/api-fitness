@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('orderable_id');
             $table->string('orderable_type');
             $table->text('price');
+            $table->text('turn_code')->nullable();
+            $table->boolean('visit')->default(false);
             $table->enum('status', ['unpaid', 'paid_uncomplete', 'complete', 'received_program']);
             $table->text('tracking_serial')->nullable();
             $table->timestamps();

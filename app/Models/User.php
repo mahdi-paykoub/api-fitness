@@ -20,6 +20,8 @@ class User extends Authenticatable
     protected $fillable = [
         'phone',
         'name',
+        'admin',
+        'status',
     ];
 
     public function customTokens()
@@ -39,5 +41,10 @@ class User extends Authenticatable
     public function userInfoStatus()
     {
         return $this->hasMany(UserInfoStatus::class);
+    }
+
+    public function personalInfo()
+    {
+        return $this->hasOne(PersonalInfo::class);
     }
 }

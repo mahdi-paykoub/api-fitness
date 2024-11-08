@@ -13,13 +13,18 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $users = User::all();
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در دریافت کاربران بوجود آمد.']]);
+        }
+
+        return response()->json(['status' => true, 'data' => $users]);
     }
 
     public function getTicketableUsers()
     {
         try {
-            //get all courses
             $users = User::all();
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در دریافت کاربران بوجود آمد.']]);

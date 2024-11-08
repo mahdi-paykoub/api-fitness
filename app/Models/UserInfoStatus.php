@@ -21,6 +21,14 @@ class UserInfoStatus extends Model
     {
         return $this->hasOne(UserSize::class);
     }
+    public function userQuestion()
+    {
+        return $this->hasOne(userQuestions::class);
+    }
+    public function userImage()
+    {
+        return $this->hasOne(UserImage::class);
+    }
     public function order()
     {
         return $this->belongsTo(Order::class);

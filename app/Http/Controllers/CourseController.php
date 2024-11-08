@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -23,10 +25,21 @@ class CourseController extends Controller
     {
         $data = $course;
         $sessoins = $course->sessions();
+
+
+        $has_order =  Auth::user()->orders()
+            ->where('status', 'paid_uncomplete')
+            ->where('orderable_id', $course->id)
+            ->where('orderable_type', get_class($course))
+            ->first();
+
         $data['info'] = [
             'total_time' => 0,
             'session_count' => $sessoins->count(),
+            'isUserRegisteredToThisCourse' => $has_order
         ];
+
+
         $data['sessions'] = $sessoins->get();
         return response()->json(['status' => true, 'data' => $data]);
     }
@@ -41,5 +54,20 @@ class CourseController extends Controller
         }
 
         return response()->json(['status' => true, 'data' => $course]);
+    }
+
+
+    public function getUserCourses(Request $request)
+    {
+        try {
+            $courses =  Auth::user()->orders()
+                ->where('orderable_type', 'App\Models\Course')
+                ->where('status', 'paid_uncomplete')
+                ->with('orderable')->get();
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در دریافت دوره ها بوجود آمد.']]);
+        }
+
+        return response()->json(['status' => true, 'data' => $courses]);
     }
 }

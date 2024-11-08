@@ -16,7 +16,11 @@ return new class extends Migration
             $table->text('title');
             $table->text('slug');
             $table->string('price');
+            $table->boolean('visit');
+            $table->string('visit_price')->nullable();
             $table->text('description');
+            $table->integer('duration');
+            $table->text('features')->nullable();
             $table->text('body');
             $table->timestamps();
         });

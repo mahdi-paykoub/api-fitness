@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->text('name');
             $table->string('phone');
-            $table->boolean('active')->default(false);
+            $table->text('status')->nullable();
+            $table->boolean('admin')->default(false);
             $table->timestamps();
         });
     }

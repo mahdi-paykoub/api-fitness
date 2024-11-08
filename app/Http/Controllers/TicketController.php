@@ -16,6 +16,7 @@ class TicketController extends Controller
         $validation = Validator::make($request->all(), [
             'title' => 'required',
             'message' => 'required',
+            'file' => 'nullable',
 
         ]);
 
@@ -24,6 +25,16 @@ class TicketController extends Controller
 
 
         try {
+            //upload file
+            $file = null;
+
+            if ($validation->valid()['file'] != 'undefined') {
+                $file = $validation->valid()['file'];
+                $destinationPath = 'assets/files/tickets/';
+                $file_name = rand(1, 9999) . '-' . $file->getClientOriginalName();
+                $file->move(public_path($destinationPath), $file_name);
+                $file =  $destinationPath . $file_name;
+            }
             $ticket = Auth::user()->tickets()->create([
                 'title' => $validation->valid()['title'],
                 'status' => 'open',
@@ -33,9 +44,10 @@ class TicketController extends Controller
             $ticket->chats()->create([
                 'message' => $validation->valid()['message'],
                 'admin' => false,
-                'file' => 'sss',
+                'file' => $file,
             ]);
         } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => [$throwable->getMessage()]]);
             return response()->json(['status' => false, 'message' => ['مشکلی در ارسال تیکت بوجود آمد.']]);
         }
 
@@ -52,13 +64,18 @@ class TicketController extends Controller
     {
         $ticket =  Ticket::where('id', $id)->first();
         $chats = $ticket->chats()->get();
-        return response()->json(['status' => true, 'data' => $chats, 'ticket' => $ticket]);
+        if (Auth::user()->id === $ticket->user_id) {
+            return response()->json(['status' => true, 'data' => $chats, 'ticket' => $ticket]);
+        } else {
+            return response()->json(['status' => false, 'message' => ['احراز هویت مشکل دارد']]);
+        }
     }
     public function answerTicket(Request $request)
     {
         $validation = Validator::make($request->all(), [
             'ticket_id' => 'required',
             'message' => 'required',
+            'file' => 'nullable',
 
         ]);
 
@@ -67,13 +84,27 @@ class TicketController extends Controller
 
 
         try {
-            Chat::create([
-                'ticket_id' => $validation->valid()['ticket_id'],
-                'message' => $validation->valid()['message'],
-                'file' => 'ggg',
-                'admin' => false,
-            ]);
-            Ticket::where('id', $validation->valid()['ticket_id'])->first()->touch();
+            $ticket = Ticket::where('id', $validation->valid()['ticket_id'])->first();
+            if (Auth::user()->id === $ticket->user_id) {
+                //upload file
+                $file = null;
+
+                if ($validation->valid()['file'] != 'undefined') {
+                    $file = $validation->valid()['file'];
+                    $destinationPath = 'assets/files/tickets/';
+                    $file_name = rand(1, 9999) . '-' . $file->getClientOriginalName();
+                    $file->move(public_path($destinationPath), $file_name);
+                    $file =  $destinationPath . $file_name;
+                }
+
+                Chat::create([
+                    'ticket_id' => $validation->valid()['ticket_id'],
+                    'message' => $validation->valid()['message'],
+                    'file' => $file,
+                    'admin' => false,
+                ]);
+                $ticket->touch();
+            }
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در ارسال جواب بوجود آمد.']]);
             // return response()->json(['status' => false, 'message' => $throwable->getMessage()]);

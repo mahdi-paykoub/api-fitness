@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\Ticket;
 use App\Models\User;
+use App\Services\SendSms;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -33,8 +37,11 @@ class AuthController extends Controller
             $user->customTokens()->create(['code' => $code]);
 
             //send sms
+            $sms = new SendSms();
+            $sms->sendCode($validation->valid()['phone'], $code);
         } catch (\Throwable $throwable) {
-            return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
+            // return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
+            return response()->json(['status' => false, 'message' => [$throwable->getMessage()]]);
         }
         return response()->json(['status' => true, 'phone' => $validation->valid()['phone'], 'message' => ['کد 5 رقمی برای شما ارسال شد.']]);
     }
@@ -121,5 +128,32 @@ class AuthController extends Controller
     public function getMe()
     {
         return response()->json(['status' => true, 'data' => auth()->user()]);
+    }
+
+    public function getUserData()
+    {
+        try {
+            $courseCount = Order::where('user_id', Auth::user()->id)
+                ->where('status', '!=', 'unpaid')
+                ->where('orderable_type', 'App\Models\Corse')
+                ->get()->count();
+            $planCount = Order::where('user_id', Auth::user()->id)
+                ->where('status', '!=', 'unpaid')
+                ->where('orderable_type', 'App\Models\Plan')
+                ->get()->count();
+            $ticketCount = Ticket::where('user_id', Auth::user()->id)
+                ->get()->count();
+            $lastPercentage = json_decode(Auth::user()->userInfoStatus()->orderBy('id', 'desc')->first()->percentage);
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در دریافت بوجود آمد.']]);
+        }
+        return response()->json([
+            'status' => true,
+            'courseCount' => $courseCount,
+            'planCount' => $planCount,
+            'ticketCount' => $ticketCount,
+            'lastPercentage' => $lastPercentage,
+
+        ]);
     }
 }

@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Shetabit\Multipay\Exceptions\InvalidPaymentException;
 use Shetabit\Payment\Facade\Payment as ShetabitPayment;
 use Shetabit\Multipay\Invoice;
+use Symfony\Component\VarDumper\VarDumper;
 
 class PaymentController extends Controller
 {
@@ -21,6 +23,7 @@ class PaymentController extends Controller
         $validation = Validator::make($request->all(), [
             'id' => 'required',
             'type' => 'required',
+            'visit' => 'nullable',
         ]);
 
         if ($validation->fails())
@@ -37,11 +40,19 @@ class PaymentController extends Controller
                 $item = Course::where('id', $validation->valid()['id'])->first();
             }
 
+
+            $price = $item->price;
+            if ($validation->valid()['visit'] == 1 && get_class($item) === 'App\Models\Plan') {
+                $price = (int)$item->price + (int) $item->visit_price;
+            }
+
+
             $order = Auth::user()->orders()->create([
                 'orderable_id' => $item->id,
                 'orderable_type' => get_class($item),
-                'price' => $item->price,
+                'price' => $price,
                 'status' => 'unpaid',
+                'visit' => $validation->valid()['visit'],
             ]);
 
             //payment
@@ -71,21 +82,52 @@ class PaymentController extends Controller
             ]);
 
             $payment->order()->update([
-                'status' => 'paid_uncomplete'
+                'status' => 'paid_uncomplete',
+                'turn_code' => Str::random(10) . rand(100, 10000),
             ]);
 
             $order = $payment->order()->first();
             $user = $order->user()->first();
 
-            $user->update([
-                'active' => true
-            ]);
 
-            $user->userInfoStatus()->create([
-                'order_id' => $order->id,
-                'is_complete_info' => false,
-                'percentage' => '0',
-            ]);
+            if ($order->orderable_type === 'App\Models\Plan') {
+
+                $percentage = $user->personalInfo()->first() === null ? [] : ['personal'];
+                $user->userInfoStatus()->create([
+                    'order_id' => $order->id,
+                    'percentage' => json_encode($percentage),
+                ]);
+
+                $prevStatus = (array)json_decode($user->status);
+                if ($user->status != null) {
+                    if (!in_array('plan', $prevStatus)) {
+                        array_push($prevStatus, 'plan');
+                        $user->update([
+                            'status' => json_encode($prevStatus)
+                        ]);
+                    }
+                } else {
+                    $user->update([
+                        'status' => json_encode(['plan'])
+                    ]);
+                }
+            } elseif ($order->orderable_type === 'App\Models\Course') {
+                $prevStatus = (array)json_decode($user->status);
+                if ($user->status != null) {
+                    if (!in_array('course', $prevStatus)) {
+                        array_push($prevStatus, 'course');
+                        $user->update([
+                            'status' => json_encode($prevStatus)
+                        ]);
+                    }
+                } else {
+                    $user->update([
+                        'status' => json_encode(['course'])
+                    ]);
+                }
+            }
+
+
             return Redirect::to('http://localhost:3000/payment/success');
         } catch (InvalidPaymentException $exception) {
             return Redirect::to('http://localhost:3000/payment/fail');

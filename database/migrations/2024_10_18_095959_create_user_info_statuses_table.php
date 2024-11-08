@@ -20,8 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
-            $table->boolean('is_complete_info');
-            $table->integer('percentage');
+            $table->string('percentage');
 
 
             $table->timestamps();
