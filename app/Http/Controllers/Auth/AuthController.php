@@ -18,9 +18,8 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'name' => 'required',
-            'phone' => 'required',
-            //unique:users
+            'name' => 'required|min:2|max:30',
+            'phone' => 'required|unique:users|regex:/^[0][9][0-9]{9,9}$/',
         ]);
 
         if ($validation->fails())
@@ -40,8 +39,7 @@ class AuthController extends Controller
             $sms = new SendSms();
             $sms->sendCode($validation->valid()['phone'], $code);
         } catch (\Throwable $throwable) {
-            // return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
-            return response()->json(['status' => false, 'message' => [$throwable->getMessage()]]);
+            return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
         }
         return response()->json(['status' => true, 'phone' => $validation->valid()['phone'], 'message' => ['کد 5 رقمی برای شما ارسال شد.']]);
     }
@@ -49,8 +47,8 @@ class AuthController extends Controller
     public function veryfyPhoneNumber(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'code' => 'required',
-            'phone' => 'required',
+            'code' => 'required|digits:6|numeric',
+            'phone' => 'required|regex:/^[0][9][0-9]{9,9}$/',
         ]);
 
         if ($validation->fails())
@@ -94,7 +92,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'phone' => 'required',
+            'phone' => 'required|regex:/^[0][9][0-9]{9,9}$/',
         ]);
 
         if ($validation->fails())
@@ -114,7 +112,8 @@ class AuthController extends Controller
             $user->customTokens()->create(['code' => $code]);
 
             //send sms
-
+            $sms = new SendSms();
+            $sms->sendCode($user->phone, $code);
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در بوجود آمد. لطفا دوباره سعی نمایید.']]);
         }

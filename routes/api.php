@@ -26,13 +26,39 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::middleware(['auth:sanctum', 'UserPanelAccess'])->group(function () {
+    //ticket
+    Route::post('/send-ticket', [TicketController::class, 'sendTicket']);
+    Route::get('/get-user-tickets', [TicketController::class, 'getUserTickets']);
+    Route::get('/get-ticket-chats/{id}', [TicketController::class, 'getTicketChats']);
+    Route::post('/answer-ticket', [TicketController::class, 'answerTicket']);
+    //user size
+    Route::post('/user-size', [UserSizeController::class, 'addSizes']);
+    Route::post('/uer-images', [UserImageController::class, 'addImages']);
+    Route::post('/user-question', [userQuestionsController::class, 'addQuestions']);
+
+    //order
+    Route::get('/get-inquiry-codes', [OrderController::class, 'getInquiryCodes']);
+    // tdod
+    Route::post('/get-order-turn', [OrderController::class, 'getOrderTurn']);
+    //end todo
+    Route::get('/get-order-by-user', [OrderController::class, 'getUserPlanOrders']);
+    Route::get('/get-order-detail/{id}', [OrderController::class, 'getUserOrderDetail']);
+    //personal info
+    Route::post('/add-personal-info', [PersonalInfoController::class, 'storePersonalInfo']);
+    Route::get('/get-personal-info', [PersonalInfoController::class, 'getUserPersonalInfo']);
+
+    //default size
+    Route::get('/get-default-infos', [UserSizeController::class, 'getUserDefaultInfoes']);
 });
 
 //course
 Route::get('/course/all', [CourseController::class, 'all']);
-Route::middleware('auth:sanctum')->get('/course/{course}', [CourseController::class, 'single']);
+Route::get('/course/{course}', [CourseController::class, 'single']);
 Route::middleware('auth:sanctum')->get('/get-user-courses', [CourseController::class, 'getUserCourses']);
 Route::get('/course-id/{id}', [CourseController::class, 'getCourseById']);
 //session
@@ -54,24 +80,3 @@ Route::middleware('auth:sanctum')->get('/get-user-data', [AuthController::class,
 //payment
 Route::middleware('auth:sanctum')->post('/payment', [PaymentController::class, 'payment']);
 Route::get('/payment/callback', [PaymentController::class, 'payment_callback'])->name('payment.callback');
-//ticket
-Route::middleware('auth:sanctum')->post('/send-ticket', [TicketController::class, 'sendTicket']);
-Route::middleware('auth:sanctum')->get('/get-user-tickets', [TicketController::class, 'getUserTickets']);
-Route::middleware('auth:sanctum')->get('/get-ticket-chats/{id}', [TicketController::class, 'getTicketChats']);
-Route::middleware('auth:sanctum')->post('/answer-ticket', [TicketController::class, 'answerTicket']);
-//user size
-Route::middleware('auth:sanctum')->post('/user-size', [UserSizeController::class, 'addSizes']);
-Route::middleware('auth:sanctum')->post('/uer-images', [UserImageController::class, 'addImages']);
-Route::middleware('auth:sanctum')->post('/user-question', [userQuestionsController::class, 'addQuestions']);
-
-//order
-Route::middleware('auth:sanctum')->get('/get-inquiry-codes', [OrderController::class, 'getInquiryCodes']);
-Route::post('/get-order-turn', [OrderController::class, 'getOrderTurn']);
-Route::middleware('auth:sanctum')->get('/get-order-by-user', [OrderController::class, 'getUserPlanOrders']);
-Route::middleware('auth:sanctum')->get('/get-order-detail/{id}', [OrderController::class, 'getUserOrderDetail']);
-//personal info
-Route::middleware('auth:sanctum')->post('/add-personal-info', [PersonalInfoController::class, 'storePersonalInfo']);
-Route::middleware('auth:sanctum')->get('/get-personal-info', [PersonalInfoController::class, 'getUserPersonalInfo']);
-
-//default size
-Route::middleware('auth:sanctum')->get('/get-default-infos', [UserSizeController::class, 'getUserDefaultInfoes']);

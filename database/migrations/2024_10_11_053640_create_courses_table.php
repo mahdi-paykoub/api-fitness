@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('slug');
             $table->text('image');
             $table->string('price');
+            $table->string('off_price')->nullable();
             $table->text('body');
             $table->timestamps();
         });

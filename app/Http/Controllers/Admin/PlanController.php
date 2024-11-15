@@ -34,6 +34,7 @@ class PlanController extends Controller
             'title' => 'required',
             'slug' => 'required',
             'price' => 'required',
+            'off_price' => 'nullable',
             'description' => 'required',
             'body' => 'required',
             'visit' => 'required',
@@ -41,14 +42,12 @@ class PlanController extends Controller
             'features' => 'nullable',
             'duration' => 'required',
         ]);
-        // return response()->json($validation->valid()['features']);
         if ($validation->fails())
             return response()->json(['status' => false, 'message' => $validation->errors()->all()]);
 
         try {
             plan::create($validation->valid());
         } catch (\Throwable $throwable) {
-            return response()->json(['status' => false, 'message' => [$throwable->getMessage()]]);
             return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
         }
 
@@ -60,7 +59,7 @@ class PlanController extends Controller
      */
     public function show(plan $plan)
     {
-        //
+        return response()->json(['status' => true, 'data' => $plan]);
     }
 
     /**
@@ -68,7 +67,34 @@ class PlanController extends Controller
      */
     public function update(Request $request, plan $plan)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'title' => 'required',
+            'slug' => 'required',
+            'price' => 'required',
+            'off_price' => 'nullable',
+            'description' => 'required',
+            'body' => 'required',
+            'duration' => 'required',
+        ]);
+        if ($validation->fails())
+            return response()->json(['status' => false, 'message' => $validation->errors()->all()]);
+
+        try {
+            $plan->update([
+                'title'=> $validation->valid()['title'],
+                'slug'=> $validation->valid()['slug'],
+                'price'=> $validation->valid()['price'],
+                'off_price'=> $validation->valid()['off_price'],
+                'description'=> $validation->valid()['description'],
+                'body'=> $validation->valid()['body'],
+                'duration'=> $validation->valid()['duration'],
+            ]);
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => $throwable->getMessage()]);
+            return response()->json(['status' => false, 'message' => ['مشکلی در آپدیت بوجود آمد.']]);
+        }
+
+        return response()->json(['status' => true, 'data' => $plan, 'message' => ['برنامه با موفقیت آپدیت شد.']]);
     }
 
     /**
@@ -88,7 +114,7 @@ class PlanController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'files' => 'required',
-        
+
         ]);
         if ($validation->fails())
             return response()->json(['status' => false, 'message' => $validation->errors()->all()]);

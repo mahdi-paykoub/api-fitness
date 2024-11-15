@@ -16,6 +16,7 @@ class Plan extends Model
         'title',
         'slug',
         'price',
+        'off_price',
         'description',
         'body',
         'visit',

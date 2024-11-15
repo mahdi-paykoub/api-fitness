@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('title');
             $table->text('slug');
             $table->string('price');
+            $table->string('off_price')->nullable();
             $table->boolean('visit');
             $table->string('visit_price')->nullable();
             $table->text('description');

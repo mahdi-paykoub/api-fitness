@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Chat;
 use App\Models\Ticket;
+use App\Models\User;
+use App\Services\SendSms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -17,8 +19,21 @@ class TicketController extends Controller
     public function index()
     {
         try {
-            //get all tickets
-            $tickets = Ticket::orderBy('updated_at', 'desc')->get();
+            $tickets = Ticket::orderBy('updated_at', 'desc')
+                ->where('admin', false)
+                ->get();
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در دریافت تیکت ها بوجود آمد.']]);
+        }
+
+        return response()->json(['status' => true, 'data' => $tickets]);
+    }
+    public function adminTickets()
+    {
+        try {
+            $tickets = Ticket::orderBy('updated_at', 'desc')
+                ->where('admin', true)
+                ->get();
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در دریافت تیکت ها بوجود آمد.']]);
         }
@@ -84,6 +99,7 @@ class TicketController extends Controller
 
 
         try {
+            $user = Ticket::where('id', $validation->valid()['ticket_id'])->first()->user()->first();
             $file = null;
             if ($validation->valid()['file'] != 'undefined') {
                 $file = $validation->valid()['file'];
@@ -99,6 +115,10 @@ class TicketController extends Controller
                 'file' => $file,
                 'admin' => true,
             ]);
+
+            //send sms
+            $sms = new SendSms();
+            $sms->sendTicketNotifToUser($user->phone, $user->name);
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در ارسال جواب بوجود آمد.']]);
             // return response()->json(['status' => false, 'message' => $throwable->getMessage()]);
@@ -124,6 +144,7 @@ class TicketController extends Controller
 
 
         try {
+            $user = User::where('id', $validation->valid()['user_id'])->first();
             $file = null;
 
             if ($validation->valid()['file'] != 'undefined') {
@@ -147,6 +168,11 @@ class TicketController extends Controller
                 'admin' => true,
                 'file' => $file,
             ]);
+
+
+            //send sms
+            $sms = new SendSms();
+            $sms->sendTicketNotifToUser($user->phone, $user->name);
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در ارسال تیکت بوجود آمد.']]);
         }

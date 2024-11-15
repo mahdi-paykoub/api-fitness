@@ -37,4 +37,8 @@ class UserInfoStatus extends Model
     {
         return $this->hasOne(Program::class);
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

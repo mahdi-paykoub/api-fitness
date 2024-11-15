@@ -23,6 +23,7 @@ Route::middleware(['auth:sanctum', 'AdminPanelAccess'])->group(function () {
     Route::post('/change-ticket-status',  [TicketController::class, 'changeTicketStatus']);
     Route::get('/get-ticket-chats/{id}',  [TicketController::class, 'getTicketChats']);
     Route::get('/get-user-other-ticket/{ticketId}/{userId}',  [TicketController::class, 'otherUserTickets']);
+    Route::get('/admin-ticket',  [TicketController::class, 'adminTickets']);
     Route::resource('ticket', TicketController::class);
 
     Route::post('/upload-ck-image',  [PlanController::class, 'uploadCKEditorImages']);
@@ -32,6 +33,7 @@ Route::middleware(['auth:sanctum', 'AdminPanelAccess'])->group(function () {
     Route::resource('session', SessionController::class);
 
     //user
+    Route::post('/user/add-user-prev-info',  [UserController::class, 'storUserPrevInfos']);
     Route::get('/user/ticketable',  [UserController::class, 'getTicketableUsers']);
     Route::resource('user', UserController::class);
 
@@ -50,4 +52,26 @@ Route::middleware(['auth:sanctum', 'AdminPanelAccess'])->group(function () {
     Route::post('/admin-sms-option',  [OptionController::class, 'adminSmsOption']);
     Route::get('/get-all-options',  [OptionController::class, 'getAllOptions']);
     Route::post('/admin-phone-number',  [OptionController::class, 'addAdminPhoneNumber']);
+});
+
+
+Route::get('routes', function () {
+    $routeCollection = Route::getRoutes();
+
+    echo "<table style='width:100%'>";
+    echo "<tr>";
+    echo "<td width='10%'><h4>HTTP Method</h4></td>";
+    echo "<td width='10%'><h4>Route</h4></td>";
+    echo "<td width='10%'><h4>Name</h4></td>";
+    echo "<td width='70%'><h4>Corresponding Action</h4></td>";
+    echo "</tr>";
+    foreach ($routeCollection as $value) {
+        echo "<tr>";
+        echo "<td>" . $value->methods()[0] . "</td>";
+        echo "<td>" . $value->uri() . "</td>";
+        echo "<td>" . $value->getName() . "</td>";
+        echo "<td>" . $value->getActionName() . "</td>";
+        echo "</tr>";
+    }
+    echo "</table>";
 });

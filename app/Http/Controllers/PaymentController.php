@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Plan;
+use App\Services\SendSms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -91,7 +92,7 @@ class PaymentController extends Controller
 
 
             if ($order->orderable_type === 'App\Models\Plan') {
-
+                $plan = $order->orderable()->first();
                 $percentage = $user->personalInfo()->first() === null ? [] : ['personal'];
                 $user->userInfoStatus()->create([
                     'order_id' => $order->id,
@@ -111,6 +112,9 @@ class PaymentController extends Controller
                         'status' => json_encode(['plan'])
                     ]);
                 }
+                //send sms
+                $sms = new SendSms();
+                $sms->sendRegisterPlanNotifToUser($user->phone, $user->name, $plan->title, $order->turn_code);
             } elseif ($order->orderable_type === 'App\Models\Course') {
                 $prevStatus = (array)json_decode($user->status);
                 if ($user->status != null) {
@@ -126,6 +130,7 @@ class PaymentController extends Controller
                     ]);
                 }
             }
+
 
 
             return Redirect::to('http://localhost:3000/payment/success');

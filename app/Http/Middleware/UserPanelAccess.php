@@ -4,10 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminPanelAccess
+class UserPanelAccess
 {
     /**
      * Handle an incoming request.
@@ -16,8 +15,10 @@ class AdminPanelAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth('sanctum')->user()->admin) {
-            return $next($request);
+        if (json_decode(auth('sanctum')->user()->status) != null) {
+            if (count(json_decode(auth('sanctum')->user()->status)) > 0) {
+                return $next($request);
+            }
         }
     }
 }

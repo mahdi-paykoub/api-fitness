@@ -13,21 +13,21 @@ class UserSizeController extends Controller
     {
 
         $validation = Validator::make($request->all(), [
-            'height' => 'required',
-            'weight' => 'required',
-            'neck' => 'nullable',
-            'shoulder' => 'nullable',
-            'arm' => 'nullable',
-            'contracted_arm' => 'nullable',
-            'forearm' => 'nullable',
-            'wrist' => 'nullable',
-            'chest' => 'nullable',
-            'belly' => 'nullable',
-            'waist' => 'nullable',
-            'hips' => 'nullable',
-            'thigh' => 'nullable',
-            'leg' => 'nullable',
-            'ankle' => 'nullable',
+            'height' => 'required|numeric',
+            'weight' => 'required|numeric',
+            'neck' => 'nullable|numeric',
+            'shoulder' => 'nullable|numeric',
+            'arm' => 'nullable|numeric',
+            'contracted_arm' => 'nullable|numeric',
+            'forearm' => 'nullable|numeric',
+            'wrist' => 'nullable|numeric',
+            'chest' => 'nullable|numeric',
+            'belly' => 'nullable|numeric',
+            'waist' => 'nullable|numeric',
+            'hips' => 'nullable|numeric',
+            'thigh' => 'nullable|numeric',
+            'leg' => 'nullable|numeric',
+            'ankle' => 'nullable|numeric',
         ]);
 
         if ($validation->fails())

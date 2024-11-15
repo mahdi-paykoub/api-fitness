@@ -34,6 +34,7 @@ class CourseController extends Controller
         $validation = Validator::make($request->all(), [
             'title' => 'required',
             'price' => 'required',
+            'off_price' => 'nullable',
             'image' => 'required',
             'body' => 'required',
             'slug' => 'required',
@@ -65,7 +66,7 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        //
+        return response()->json(['status' => true, 'data' => $course]);
     }
 
     /**
@@ -73,7 +74,33 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'title' => 'required',
+            'price' => 'required',
+            'off_price' => 'nullable',
+            'image' => 'required',
+            'body' => 'required',
+            'slug' => 'required',
+        ]);
+
+        if ($validation->fails())
+            return response()->json(['status' => false, 'message' => $validation->errors()->all()]);
+
+        try {
+            //upload image
+            $file = $validation->valid()['image']; 
+            $destinationPath = 'assets/images/course/';
+            $file_name = rand(1, 9999) . '-' . $file->getClientOriginalName();
+            $file->move(public_path($destinationPath), $file_name);
+            $data = array_merge($validation->valid(), ["image" => $destinationPath . $file_name]);
+
+           
+            $course->update($data);
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در آپدیت بوجود آمد.']]);
+        }
+
+        return response()->json(['status' => true, 'data' => $course, 'message' => ['دوره با موفقیت آپدیت شد.']]);
     }
 
     /**

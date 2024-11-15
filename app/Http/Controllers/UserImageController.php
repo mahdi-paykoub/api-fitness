@@ -11,9 +11,9 @@ class UserImageController extends Controller
     public function addImages(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'front' => 'required',
-            'back' => 'required',
-            'side' => 'nullable',
+            'front' => 'required|max:2000|mimes:jpeg,png,webp',
+            'back' => 'required|max:2000|mimes:jpeg,png,webp',
+            'side' => 'required|max:2000|mimes:jpeg,png,webp',
         ]);
 
         if ($validation->fails())

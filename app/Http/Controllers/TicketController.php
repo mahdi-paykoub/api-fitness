@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Chat;
 use App\Models\Ticket;
+use App\Services\SendSms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -46,6 +47,10 @@ class TicketController extends Controller
                 'admin' => false,
                 'file' => $file,
             ]);
+
+            //send sms
+            $sms = new SendSms();
+            $sms->sendTicketNotifToAdmin(Auth::user()->name);
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => [$throwable->getMessage()]]);
             return response()->json(['status' => false, 'message' => ['مشکلی در ارسال تیکت بوجود آمد.']]);
@@ -104,6 +109,9 @@ class TicketController extends Controller
                     'admin' => false,
                 ]);
                 $ticket->touch();
+                //send sms
+                $sms = new SendSms();
+                $sms->sendTicketNotifToAdmin(Auth::user()->name);
             }
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در ارسال جواب بوجود آمد.']]);

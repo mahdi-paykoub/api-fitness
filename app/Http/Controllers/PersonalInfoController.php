@@ -12,9 +12,9 @@ class PersonalInfoController extends Controller
     public function storePersonalInfo(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'year' => 'required',
-            'month' => 'required',
-            'day' => 'required',
+            'year' => 'required|numeric',
+            'month' => 'required|numeric',
+            'day' => 'required|numeric',
             'state' => 'required',
             'city' => 'required',
             'gender' => 'required',
