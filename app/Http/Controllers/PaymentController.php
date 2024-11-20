@@ -115,6 +115,7 @@ class PaymentController extends Controller
                 //send sms
                 $sms = new SendSms();
                 $sms->sendRegisterPlanNotifToUser($user->phone, $user->name, $plan->title, $order->turn_code);
+                $sms->sendUserRegisterNotifToAdmin($user->name);
             } elseif ($order->orderable_type === 'App\Models\Course') {
                 $prevStatus = (array)json_decode($user->status);
                 if ($user->status != null) {
