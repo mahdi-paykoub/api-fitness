@@ -115,7 +115,7 @@ class AuthController extends Controller
             $sms = new SendSms();
             $sms->sendCode($user->phone, $code);
         } catch (\Throwable $throwable) {
-            return response()->json(['status' => false, 'message' => ['مشکلی در بوجود آمد. لطفا دوباره سعی نمایید.']]);
+            return response()->json(['status' => false, 'message' => ['مشکلی در ورود بوجود آمد. لطفا دوباره سعی نمایید.']]);
         }
 
         return response()->json([
@@ -130,7 +130,6 @@ class AuthController extends Controller
             return response()->json(['status' => true, 'data' => auth()->user()]);
         }
         return response()->json(['status' => false]);
-
     }
 
     public function getUserData()

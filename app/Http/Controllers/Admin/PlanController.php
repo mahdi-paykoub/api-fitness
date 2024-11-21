@@ -81,13 +81,13 @@ class PlanController extends Controller
 
         try {
             $plan->update([
-                'title'=> $validation->valid()['title'],
-                'slug'=> $validation->valid()['slug'],
-                'price'=> $validation->valid()['price'],
-                'off_price'=> $validation->valid()['off_price'],
-                'description'=> $validation->valid()['description'],
-                'body'=> $validation->valid()['body'],
-                'duration'=> $validation->valid()['duration'],
+                'title' => $validation->valid()['title'],
+                'slug' => $validation->valid()['slug'],
+                'price' => $validation->valid()['price'],
+                'off_price' => $validation->valid()['off_price'],
+                'description' => $validation->valid()['description'],
+                'body' => $validation->valid()['body'],
+                'duration' => $validation->valid()['duration'],
             ]);
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => $throwable->getMessage()]);
@@ -129,5 +129,23 @@ class PlanController extends Controller
 
 
         return response()->json(['status' => true, 'url' => $destinationPath . $file_name]);
+    }
+    public function handlePlanActivation(Request $request, Plan $plan)
+    {
+        $validation = Validator::make($request->all(), [
+            'activation' => 'required',
+
+        ]);
+        if ($validation->fails())
+            return response()->json(['status' => false, 'message' => $validation->errors()->all()]);
+
+        try {
+            $plan->update([
+                'active' => $validation->valid()['activation']
+            ]);
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در تغییر وضعیت بوجود آمد.']]);
+        }
+        return response()->json(['status' => true, 'message' => ['وضعیت دوره با موفقیت تغییر کرد.']]);
     }
 }

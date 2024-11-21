@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('duration');
             $table->text('features')->nullable();
             $table->text('body');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

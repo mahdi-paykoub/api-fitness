@@ -12,12 +12,12 @@ class PlanController extends Controller
     {
         try {
             //get all Plan
-            $courses = Plan::all();
+            $plans = Plan::where('active', 1)->get();
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در دریافت برنامه ها بوجود آمد.']]);
         }
 
-        return response()->json(['status' => true, 'data' => $courses]);
+        return response()->json(['status' => true, 'data' => $plans]);
     }
     public function single(Plan $plan)
     {

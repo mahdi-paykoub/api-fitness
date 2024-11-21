@@ -23,6 +23,7 @@ class Plan extends Model
         'visit_price',
         'duration',
         'features',
+        'active',
     ];
 
     public function orders()

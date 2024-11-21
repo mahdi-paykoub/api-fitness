@@ -27,6 +27,7 @@ Route::middleware(['auth:sanctum', 'AdminPanelAccess'])->group(function () {
     Route::resource('ticket', TicketController::class);
 
     Route::post('/upload-ck-image',  [PlanController::class, 'uploadCKEditorImages']);
+    Route::post('/handle-plan-active/{plan}',  [PlanController::class, 'handlePlanActivation']);
     Route::resource('plan', PlanController::class);
 
     Route::get('/session/{course}',  [SessionController::class, 'getSessionsOfOneCourse']);
