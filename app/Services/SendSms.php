@@ -8,8 +8,13 @@ use Melipayamak\MelipayamakApi;
 
 class SendSms
 {
+    public function hasPerpision($key)
+    {
+        return Option::where('key', $key)->first();
+    }
     public function sendCode($to, $text)
     {
+
         $username = env('MELIPAYAMAK_USERNAME');
         $password = env('MELIPAYAMAK_PASSWORD');
         $api = new MelipayamakApi($username, $password);
@@ -18,29 +23,37 @@ class SendSms
 
         $response = $sms->sendByBaseNumber($text, $to, 112743);
     }
-    
+
     public function sendTicketNotifToUser($to, $user_name)
     {
-        $username = env('MELIPAYAMAK_USERNAME');
-        $password = env('MELIPAYAMAK_PASSWORD');
+        if ($this->hasPerpision('USER_TICKET_SMS') != null) {
+            if ($this->hasPerpision('USER_TICKET_SMS')->value == 1) {
+                $username = env('MELIPAYAMAK_USERNAME');
+                $password = env('MELIPAYAMAK_PASSWORD');
 
-        $api = new MelipayamakApi($username, $password);
-        $sms = $api->sms('soap');
-        $from = '50004001093319';
+                $api = new MelipayamakApi($username, $password);
+                $sms = $api->sms('soap');
+                $from = '50004001093319';
 
-        $response = $sms->sendByBaseNumber($user_name, $to, 112746);
+                $response = $sms->sendByBaseNumber($user_name, $to, 112746);
+            }
+        }
     }
 
     public function sendRegisterPlanNotifToUser($to, $user_name, $pack_type, $code_peygiri)
     {
-        $username = env('MELIPAYAMAK_USERNAME');
-        $password = env('MELIPAYAMAK_PASSWORD');
+        if ($this->hasPerpision('USER_WELCOME_SMS') != null) {
+            if ($this->hasPerpision('USER_WELCOME_SMS')->value == 1) {
+                $username = env('MELIPAYAMAK_USERNAME');
+                $password = env('MELIPAYAMAK_PASSWORD');
 
-        $api = new MelipayamakApi($username, $password);
-        $sms = $api->sms('soap');
-        $from = '50004001093319';
+                $api = new MelipayamakApi($username, $password);
+                $sms = $api->sms('soap');
+                $from = '50004001093319';
 
-        $response = $sms->sendByBaseNumber(array($user_name, $pack_type, $code_peygiri), $to, 113233);
+                $response = $sms->sendByBaseNumber(array($user_name, $pack_type, $code_peygiri), $to, 113233);
+            }
+        }
     }
 
     public function sendProgramNotifToUser($to, $user_name)
@@ -57,31 +70,39 @@ class SendSms
 
     public function sendTicketNotifToAdmin($user_name)
     {
-        $adminPhone = Option::where('key', 'ADMIN_TICKET_PHONE')->first();
-        if ($adminPhone != null) {
-            $username = env('MELIPAYAMAK_USERNAME');
-            $password = env('MELIPAYAMAK_PASSWORD');
+        if ($this->hasPerpision('ADMIN_TICKET_SMS') != null) {
+            if ($this->hasPerpision('ADMIN_TICKET_SMS')->value == 1) {
+                $adminPhone = Option::where('key', 'ADMIN_TICKET_PHONE')->first();
+                if ($adminPhone != null) {
+                    $username = env('MELIPAYAMAK_USERNAME');
+                    $password = env('MELIPAYAMAK_PASSWORD');
 
-            $api = new MelipayamakApi($username, $password);
-            $sms = $api->sms('soap');
-            $from = '50004001093319';
+                    $api = new MelipayamakApi($username, $password);
+                    $sms = $api->sms('soap');
+                    $from = '50004001093319';
 
-            $response = $sms->sendByBaseNumber($user_name, $adminPhone->value, 116566);
+                    $response = $sms->sendByBaseNumber($user_name, $adminPhone->value, 116566);
+                }
+            }
         }
     }
 
     public function sendUserRegisterNotifToAdmin($user_name)
     {
-        $adminPhone = Option::where('key', 'ADMIN_TICKET_PHONE')->first();
-        if ($adminPhone != null) {
-            $username = env('MELIPAYAMAK_USERNAME');
-            $password = env('MELIPAYAMAK_PASSWORD');
+        if ($this->hasPerpision('ADMIN_REGISTER_SMS') != null) {
+            if ($this->hasPerpision('ADMIN_REGISTER_SMS')->value == 1) {
+                $adminPhone = Option::where('key', 'ADMIN_TICKET_PHONE')->first();
+                if ($adminPhone != null) {
+                    $username = env('MELIPAYAMAK_USERNAME');
+                    $password = env('MELIPAYAMAK_PASSWORD');
 
-            $api = new MelipayamakApi($username, $password);
-            $sms = $api->sms('soap');
-            $from = '50004001093319';
+                    $api = new MelipayamakApi($username, $password);
+                    $sms = $api->sms('soap');
+                    $from = '50004001093319';
 
-            $response = $sms->sendByBaseNumber($user_name, $adminPhone->value, 116567);
+                    $response = $sms->sendByBaseNumber($user_name, $adminPhone->value, 116567);
+                }
+            }
         }
     }
 
