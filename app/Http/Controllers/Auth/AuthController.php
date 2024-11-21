@@ -126,7 +126,11 @@ class AuthController extends Controller
     }
     public function getMe()
     {
-        return response()->json(['status' => true, 'data' => auth()->user()]);
+        if (auth('sanctum')->check()) {
+            return response()->json(['status' => true, 'data' => auth()->user()]);
+        }
+        return response()->json(['status' => false]);
+
     }
 
     public function getUserData()
@@ -154,5 +158,16 @@ class AuthController extends Controller
             'lastPercentage' => $lastPercentage,
 
         ]);
+    }
+
+    public function logout()
+    {
+
+        try {
+            Auth::user()->currentAccessToken()->delete();
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در خروج بوجود آمد.']]);
+        }
+        return response()->json(['status' => true, 'message' => ['شما با موفقیت خارج شدید']]);
     }
 }

@@ -266,6 +266,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        try {
+            $user->delete();
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در حذف بوجود آمد.']]);
+        }
+        return response()->json(['status' => true, 'message' => ['کاربر با موفقیت حذف شد.']]);
+
     }
 }

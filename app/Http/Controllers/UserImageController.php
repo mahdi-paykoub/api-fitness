@@ -94,8 +94,7 @@ class UserImageController extends Controller
                 $userStatus->userImage()->update($data);
             }
         } catch (\Throwable $throwable) {
-            return response()->json(['status' => false, 'message' => [$throwable->getMessage()]]);
-            // return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
+            return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
         }
 
         return response()->json(['status' => true, 'message' => ['تصاویر شما با موفقیت ثبت شد.']]);

@@ -66,6 +66,7 @@ Route::middleware('auth:sanctum')->get('/session/{session}', [SessionController:
 Route::middleware('auth:sanctum')->get('/session/{session}/download', [SessionController::class, 'getDownloadSession']);
 
 //plan
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::get('/plan/all', [PlanController::class, 'all']);
 Route::get('/plan/{plan}', [PlanController::class, 'single']);
 Route::get('/plan-id/{id}', [PlanController::class, 'getPlanById']);

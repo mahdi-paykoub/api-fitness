@@ -33,7 +33,6 @@ class PaymentController extends Controller
 
 
         try {
-
             //oredr
             if ($validation->valid()['type'] === 'plan') {
                 $item = Plan::where('id', $validation->valid()['id'])->first();
@@ -116,6 +115,7 @@ class PaymentController extends Controller
                 $sms = new SendSms();
                 $sms->sendRegisterPlanNotifToUser($user->phone, $user->name, $plan->title, $order->turn_code);
                 $sms->sendUserRegisterNotifToAdmin($user->name);
+                return Redirect::to('http://localhost:3000/payment/plan/success');
             } elseif ($order->orderable_type === 'App\Models\Course') {
                 $prevStatus = (array)json_decode($user->status);
                 if ($user->status != null) {
@@ -130,11 +130,8 @@ class PaymentController extends Controller
                         'status' => json_encode(['course'])
                     ]);
                 }
+                return Redirect::to('http://localhost:3000/payment/course/success');
             }
-
-
-
-            return Redirect::to('http://localhost:3000/payment/success');
         } catch (InvalidPaymentException $exception) {
             return Redirect::to('http://localhost:3000/payment/fail');
         }
