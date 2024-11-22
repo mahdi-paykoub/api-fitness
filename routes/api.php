@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\FreeplanController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PersonalInfoController;
@@ -70,6 +71,8 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 Route::get('/plan/all', [PlanController::class, 'all']);
 Route::get('/plan/{plan}', [PlanController::class, 'single']);
 Route::get('/plan-id/{id}', [PlanController::class, 'getPlanById']);
+//free plan
+Route::middleware('auth:sanctum')->get('/free-plans', [FreeplanController::class, 'freePlans']);
 
 // auth
 Route::post('/login', [AuthController::class, 'login']);

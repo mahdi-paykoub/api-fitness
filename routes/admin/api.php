@@ -1,8 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CourseController;
-use App\Http\Controllers\Admin\ExelController;
-use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\FreeplanController;
 use App\Http\Controllers\Admin\OptionController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentsController;
@@ -29,6 +28,8 @@ Route::middleware(['auth:sanctum', 'AdminPanelAccess'])->group(function () {
     Route::post('/upload-ck-image',  [PlanController::class, 'uploadCKEditorImages']);
     Route::post('/handle-plan-active/{plan}',  [PlanController::class, 'handlePlanActivation']);
     Route::resource('plan', PlanController::class);
+    //free plan
+    Route::resource('freeplan', FreeplanController::class);
 
     Route::get('/session/{course}',  [SessionController::class, 'getSessionsOfOneCourse']);
     Route::resource('session', SessionController::class);
@@ -56,23 +57,23 @@ Route::middleware(['auth:sanctum', 'AdminPanelAccess'])->group(function () {
 });
 
 
-Route::get('routes', function () {
-    $routeCollection = Route::getRoutes();
+// Route::get('routes', function () {
+//     $routeCollection = Route::getRoutes();
 
-    echo "<table style='width:100%'>";
-    echo "<tr>";
-    echo "<td width='10%'><h4>HTTP Method</h4></td>";
-    echo "<td width='10%'><h4>Route</h4></td>";
-    echo "<td width='10%'><h4>Name</h4></td>";
-    echo "<td width='70%'><h4>Corresponding Action</h4></td>";
-    echo "</tr>";
-    foreach ($routeCollection as $value) {
-        echo "<tr>";
-        echo "<td>" . $value->methods()[0] . "</td>";
-        echo "<td>" . $value->uri() . "</td>";
-        echo "<td>" . $value->getName() . "</td>";
-        echo "<td>" . $value->getActionName() . "</td>";
-        echo "</tr>";
-    }
-    echo "</table>";
-});
+//     echo "<table style='width:100%'>";
+//     echo "<tr>";
+//     echo "<td width='10%'><h4>HTTP Method</h4></td>";
+//     echo "<td width='10%'><h4>Route</h4></td>";
+//     echo "<td width='10%'><h4>Name</h4></td>";
+//     echo "<td width='70%'><h4>Corresponding Action</h4></td>";
+//     echo "</tr>";
+//     foreach ($routeCollection as $value) {
+//         echo "<tr>";
+//         echo "<td>" . $value->methods()[0] . "</td>";
+//         echo "<td>" . $value->uri() . "</td>";
+//         echo "<td>" . $value->getName() . "</td>";
+//         echo "<td>" . $value->getActionName() . "</td>";
+//         echo "</tr>";
+//     }
+//     echo "</table>";
+// });
