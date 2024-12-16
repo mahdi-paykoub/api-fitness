@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -19,29 +20,35 @@ class AuthController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'name' => 'required|min:2|max:30',
-            'phone' => 'required|unique:users|regex:/^[0][9][0-9]{9,9}$/',
+            'phone' => 'required|regex:/^[0][9][0-9]{9,9}$/',
         ]);
 
         if ($validation->fails())
-            return response()->json(['status' => false, 'message' => $validation->errors()->all()]);
+            return response()->json(['status' => false, 'unPhone' => 0, 'message' => $validation->errors()->all()]);
 
 
         try {
-            $user = User::create($validation->valid());
-            // generate code
-            $max = pow(10, 6);
-            $min = $max / 10 - 1;
-            $code = mt_rand($min, $max);
+            if (User::where('phone', $validation->valid()['phone'])->first() == null) {
+                DB::beginTransaction();
+                $user = User::create($validation->valid());
+                $max = pow(10, 6);
+                $min = $max / 10 - 1;
+                $code = mt_rand($min, $max);
 
-            $user->customTokens()->create(['code' => $code]);
+                $user->customTokens()->create(['code' => $code]);
 
-            //send sms
-            $sms = new SendSms();
-            $sms->sendCode($validation->valid()['phone'], $code);
+                //send sms
+                $sms = new SendSms();
+                $sms->sendCode($validation->valid()['phone'], $code);
+                DB::commit();
+            } else {
+                return response()->json(['status' => false, 'unPhone' => 1, 'message' => ['این شماره موبایل قبلا ثبت شده است. وارد شوید.']]);
+            }
         } catch (\Throwable $throwable) {
-            return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
+            DB::rollBack();
+            return response()->json(['status' => false,  'unPhone' => 0, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
         }
-        return response()->json(['status' => true, 'phone' => $validation->valid()['phone'], 'message' => ['کد 5 رقمی برای شما ارسال شد.']]);
+        return response()->json(['status' => true, 'phone' => $validation->valid()['phone'], 'message' => ['اطلاعات شما با موفقیت ثبت شد. کد 6 رقمی برای تایید موبایل برای شما ارسال شد.']]);
     }
 
     public function veryfyPhoneNumber(Request $request)

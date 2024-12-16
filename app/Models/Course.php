@@ -30,4 +30,8 @@ class Course extends Model
     {
         return $this->hasMany(Session::class);
     }
+    public function offs()  
+    {  
+        return $this->morphToMany(Off::class, 'offable');  
+    }  
 }

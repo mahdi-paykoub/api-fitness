@@ -54,6 +54,30 @@ class OptionController extends Controller
 
         return response()->json(['status' => true]);
     }
+    public function userScoreSetting(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'max_score' => 'required',
+            'use_score' => 'required',
+        ]);
+        if ($validation->fails())
+            return response()->json(['status' => false, 'message' => $validation->errors()->all()]);
+
+        try {
+            Option::updateOrCreate(
+                ['key' =>  'MAX_SCORE_FOR_SETTLEMENT'],
+                ['value' => request('max_score')]
+            );
+            Option::updateOrCreate(
+                ['key' =>  'SCORE_PER_USE'],
+                ['value' => request('use_score')]
+            );
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
+        }
+
+        return response()->json(['status' => true]);
+    }
 
     public function getAllOptions()
     {

@@ -18,6 +18,7 @@ class Order extends Model
         'tracking_serial',
         'turn_code',
         'visit',
+        'subscribe_code',
     ];
 
     public function orderable(): MorphTo

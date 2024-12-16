@@ -47,4 +47,25 @@ class User extends Authenticatable
     {
         return $this->hasOne(PersonalInfo::class);
     }
+    public function requestsharecode()
+    {
+        return $this->hasOne(Requestsharecode::class);
+    }
+    public function subscribeCode()
+    {
+        return $this->hasOne(SubscribeCode::class);
+    }
+
+    public function bankAccount()
+    {
+        return $this->hasOne(BankAccount::class);
+    }
+    public function settlements()
+    {
+        return $this->hasMany(Settlement::class);
+    }
+    public function offs()
+    {
+        return $this->belongsToMany(Off::class);
+    }
 }

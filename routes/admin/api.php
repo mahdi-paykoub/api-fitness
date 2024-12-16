@@ -2,14 +2,20 @@
 
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\FreeplanController;
+use App\Http\Controllers\Admin\OffController;
 use App\Http\Controllers\Admin\OptionController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentsController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\ProgramController;
+use App\Http\Controllers\Admin\RequestsharecodeController;
 use App\Http\Controllers\Admin\SessionController;
+use App\Http\Controllers\Admin\SettlementController;
+use App\Http\Controllers\Admin\SssController;
+use App\Http\Controllers\Admin\SubsCribeCodeController;
 use App\Http\Controllers\Admin\TicketController;
 use App\Http\Controllers\Admin\UserController;
+use App\Models\Settlement;
 use Illuminate\Support\Facades\Route;
 
 
@@ -25,6 +31,7 @@ Route::middleware(['auth:sanctum', 'AdminPanelAccess'])->group(function () {
     Route::get('/admin-ticket',  [TicketController::class, 'adminTickets']);
     Route::resource('ticket', TicketController::class);
 
+    Route::get('/get-course-plan',  [PlanController::class, 'getCoursePlan']);
     Route::post('/upload-ck-image',  [PlanController::class, 'uploadCKEditorImages']);
     Route::post('/handle-plan-active/{plan}',  [PlanController::class, 'handlePlanActivation']);
     Route::resource('plan', PlanController::class);
@@ -51,9 +58,21 @@ Route::middleware(['auth:sanctum', 'AdminPanelAccess'])->group(function () {
 
 
     //options
+    Route::post('/score-option',  [OptionController::class, 'userScoreSetting']);
     Route::post('/admin-sms-option',  [OptionController::class, 'adminSmsOption']);
     Route::get('/get-all-options',  [OptionController::class, 'getAllOptions']);
     Route::post('/admin-phone-number',  [OptionController::class, 'addAdminPhoneNumber']);
+    //contact us
+    Route::get('/zero-update/{sub_id}',  [SettlementController::class, 'updateZeroScore']);
+    Route::resource('settlement', SettlementController::class);
+    Route::resource('contact-us', RequestsharecodeController::class);
+    Route::get('/get-unique-code',  [SubsCribeCodeController::class, 'generateCode']);
+    Route::post('/change-active/{subscribe_code}',  [SubsCribeCodeController::class, 'changeActive']);
+    Route::get('/get-user-subCode-info/{settlement_id}',  [SubsCribeCodeController::class, 'getUserSubscribeCodeInfo']);
+    Route::resource('subscribe-code', SubsCribeCodeController::class);
+
+    //off
+    Route::resource('off', OffController::class);
 });
 
 

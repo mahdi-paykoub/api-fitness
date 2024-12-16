@@ -21,7 +21,8 @@ return new class extends Migration
             $table->text('turn_code')->nullable();
             $table->boolean('visit')->default(false);
             $table->enum('status', ['unpaid', 'paid_uncomplete', 'complete', 'received_program']);
-            $table->text('tracking_serial')->nullable();
+            $table->string('tracking_serial')->nullable();
+            $table->string('subscribe_code')->nullable();
             $table->timestamps();
         });
     }

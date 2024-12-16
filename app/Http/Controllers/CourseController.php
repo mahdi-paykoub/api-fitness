@@ -30,7 +30,9 @@ class CourseController extends Controller
         if (auth('sanctum')->check()) {
             $st = auth('sanctum')->user()->orders()
                 ->where('orderable_type', 'App\Models\Course')
-                ->where('orderable_id', $course->id)->first();
+                ->where('orderable_id', $course->id)
+                ->where('status', '!=', 'unpaid')
+                ->first();
             if ($st != null) {
                 $canBuy = false;
             }

@@ -1,13 +1,18 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FreeplanController;
+use App\Http\Controllers\OffController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\RequestsharecodeController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\SettlementController;
+use App\Http\Controllers\SubscribeCodeController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserImageController;
 use App\Http\Controllers\userQuestionsController;
@@ -84,3 +89,16 @@ Route::middleware('auth:sanctum')->get('/get-user-data', [AuthController::class,
 //payment
 Route::middleware('auth:sanctum')->post('/payment', [PaymentController::class, 'payment']);
 Route::get('/payment/callback', [PaymentController::class, 'payment_callback'])->name('payment.callback');
+
+
+//contact us
+Route::middleware('auth:sanctum')->post('/add-share-request', [RequestsharecodeController::class, 'addRequest']);
+Route::middleware('auth:sanctum')->get('/get-user-subCode-request', [RequestsharecodeController::class, 'getUserRequest']);
+Route::middleware('auth:sanctum')->get('/get-user-subscribe-code', [SubscribeCodeController::class, 'getSubscribeCode']);
+Route::middleware('auth:sanctum')->post('/add-bank-info', [BankAccountController::class, 'addNewBankAccount']);
+Route::middleware('auth:sanctum')->get('/get-user-bank-info', [BankAccountController::class, 'getUserBankAccount']);
+Route::middleware('auth:sanctum')->post('/add-settlement', [SettlementController::class, 'addSettlement']);
+Route::middleware('auth:sanctum')->get('/get-user-settlements', [SettlementController::class, 'getUserSettlements']);
+
+//off
+Route::middleware('auth:sanctum')->post('/validation-off', [OffController::class, 'validationOff']);

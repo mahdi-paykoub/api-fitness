@@ -30,4 +30,9 @@ class Plan extends Model
     {
         return $this->morphMany(Order::class, 'orderable');
     }
+
+    public function offs()  
+    {  
+        return $this->morphToMany(Off::class, 'offable');  
+    }  
 }

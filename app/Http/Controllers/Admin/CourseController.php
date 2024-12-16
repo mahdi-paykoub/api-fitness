@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -24,6 +25,7 @@ class CourseController extends Controller
 
         return response()->json(['status' => true, 'data' => $courses]);
     }
+   
 
     /**
      * Store a newly created resource in storage.
@@ -88,13 +90,13 @@ class CourseController extends Controller
 
         try {
             //upload image
-            $file = $validation->valid()['image']; 
+            $file = $validation->valid()['image'];
             $destinationPath = 'assets/images/course/';
             $file_name = rand(1, 9999) . '-' . $file->getClientOriginalName();
             $file->move(public_path($destinationPath), $file_name);
             $data = array_merge($validation->valid(), ["image" => $destinationPath . $file_name]);
 
-           
+
             $course->update($data);
         } catch (\Throwable $throwable) {
             return response()->json(['status' => false, 'message' => ['مشکلی در آپدیت بوجود آمد.']]);

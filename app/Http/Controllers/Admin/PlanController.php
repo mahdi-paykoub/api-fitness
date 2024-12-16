@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
 use App\Models\plan;
 use App\Models\Plan as ModelsPlan;
 use Illuminate\Http\Request;
@@ -24,7 +25,20 @@ class PlanController extends Controller
 
         return response()->json(['status' => true, 'data' => $plans]);
     }
+    public function getCoursePlan()
+    {
+        try {
+            //get all courses
+            $courses = Course::all()->toArray();
+            $plan = Plan::all()->toArray();
+            $data = array_merge($plan, $courses);
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => [$throwable->getMessage()]]);
+            return response()->json(['status' => false, 'message' => ['مشکلی در دریافت دوره ها بوجود آمد.']]);
+        }
 
+        return response()->json(['status' => true, 'data' => $data]);
+    }
     /**
      * Store a newly created resource in storage.
      */
