@@ -180,6 +180,9 @@ class PaymentController extends Controller
                 $sms = new SendSms();
                 $sms->sendRegisterPlanNotifToUser($user->phone, $user->name, $plan->title, $order->turn_code);
                 $sms->sendUserRegisterNotifToAdmin($user->name);
+                if ($order->visit == 1) {
+                    $sms->sendToVisitUsers($user->phone, $user->name);
+                }
                 return Redirect::to('http://localhost:3000/payment/plan/success');
             } elseif ($order->orderable_type === 'App\Models\Course') {
                 $prevStatus = (array)json_decode($user->status);
