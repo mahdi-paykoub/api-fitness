@@ -35,7 +35,7 @@ class SessionController extends Controller
             'description' => 'required',
             'time' => 'required',
             'is_free' => 'required',
-            'video' => 'required',
+            'video' => 'required|file',
             'course_id' => 'required',
         ]);
 
@@ -44,16 +44,23 @@ class SessionController extends Controller
 
 
         try {
+            $is_free_ls = $validation->valid()['is_free'] == 1 ? true : false;
             //upload image
             $file = $validation->valid()['video'];
             $destinationPath = 'assets/video/session/';
             $file_name = rand(1, 9999) . '-' . $file->getClientOriginalName();
             $file->move(public_path($destinationPath), $file_name);
-            $data = array_merge($validation->valid(), ["video" => $destinationPath . $file_name]);
-
             //add db
-            Session::create($data);
+            Session::create([
+                'title' => $validation->valid()['title'],
+                'description' => $validation->valid()['description'],
+                'time' => $validation->valid()['time'],
+                'is_free' => $is_free_ls,
+                'video' => $destinationPath . $file_name,
+                'course_id' => $validation->valid()['course_id'],
+            ]);
         } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => [$throwable->getMessage()]]);
             return response()->json(['status' => false, 'message' => ['مشکلی در ثبت بوجود آمد.']]);
         }
 
@@ -81,6 +88,11 @@ class SessionController extends Controller
      */
     public function destroy(Session $session)
     {
-        //
+        try {
+            $session->delete();
+        } catch (\Throwable $throwable) {
+            return response()->json(['status' => false, 'message' => ['مشکلی در حذف بوجود آمد.']]);
+        }
+        return response()->json(['status' => true, 'message' => ['جلسه با موفقیت حذف شد.']]);
     }
 }

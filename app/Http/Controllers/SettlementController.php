@@ -29,33 +29,34 @@ class SettlementController extends Controller
 
         try {
             if (Settlement::where('user_id', Auth::user()->id)->where('status', 0)->first() == null) {
-                $max_score = Option::where('key', 'MAX_SCORE_FOR_SETTLEMENT')->first()->value;
-                if ($max_score != null) {
-                    if (Auth::user()->subscribeCode()->first() != null) {
-                        if ((int)Auth::user()->subscribeCode()->first()->score >= (int)$max_score) {
-                            if ($validation->valid()['type'] == 'cash') {
-                                if (Auth::user()->bankAccount()->first() != null) {
+                $max_score = Option::where('key', 'MAX_SCORE_FOR_SETTLEMENT')->first();
+                    if ($max_score->value != null) {
+                        if (Auth::user()->subscribeCode()->first() != null) {
+                            if ((int)Auth::user()->subscribeCode()->first()->score >= (int)$max_score->value) {
+                                if ($validation->valid()['type'] == 'cash') {
+                                    if (Auth::user()->bankAccount()->first() != null) {
 
+                                        Auth::user()->settlements()->create([
+                                            'type' => $validation->valid()['type']
+                                        ]);
+                                    } else {
+                                        return response()->json(['status' => false, 'message' => ['برای تسویه حساب به صورت نقدی ابتدا باید اطلاعات حساب بانکی خود را تکمیل نمایید.']]);
+                                    }
+                                } else {
                                     Auth::user()->settlements()->create([
                                         'type' => $validation->valid()['type']
                                     ]);
-                                } else {
-                                    return response()->json(['status' => false, 'message' => ['برای تسویه حساب به صورت نقدی ابتدا باید اطلاعات حساب بانکی خود را تکمیل نمایید.']]);
                                 }
                             } else {
-                                Auth::user()->settlements()->create([
-                                    'type' => $validation->valid()['type']
-                                ]);
+                                return response()->json(['status' => false, 'message' => ['شما حداقل امتیاز لازم برای تسویه را ندارید.']]);
                             }
                         } else {
-                            return response()->json(['status' => false, 'message' => ['شما حداقل امتیاز لازم برای تسویه را ندارید.']]);
+                            return response()->json(['status' => false, 'message' => ['هنوز کد معرفی برای شما ثبت نشده است.']]);
                         }
-                    }else {
-                        return response()->json(['status' => false, 'message' => ['هنوز کد معرفی برای شما ثبت نشده است.']]);
+                    } else {
+                        return response()->json(['status' => false, 'message' => ['حداقل امتیاز برای ارسال درخواست تسویه ثبت نشده است.']]);
                     }
-                } else {
-                    return response()->json(['status' => false, 'message' => ['حداقل امتیاز برای ارسال درخواست تسویه ثبت نشده است.']]);
-                }
+                
             } else {
                 return response()->json(['status' => false, 'message' => ['درخواست شما قبلا ارسال شده است.']]);
             }
